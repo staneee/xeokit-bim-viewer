@@ -12,7 +12,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c;",
     "docs": "./node_modules/.bin/esdoc",
-    "publish": "npm publish --access public"
+    "push_npm": "npm publish --access public"
   },
   "repository": {
     "type": "git",
