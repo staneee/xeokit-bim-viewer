@@ -1,5 +1,7 @@
 export declare class Controller {
 
+    [key: string]: any;
+
     constructor(parent: any, cfg: any, server: any, viewer: any);
 
     /**
@@ -23,7 +25,7 @@ export declare class Controller {
      * @param {Object} [scope=this] Scope for the callback
      * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
      */
-    on(event: string, callback: Function, scope: object): string;
+    on(event: string, callback: Function, scope: object = null): string;
 
     /**
      * Cancels an event subscription that was previously made with {@link Controller#on} or {@link Controller#once}.
