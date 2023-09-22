@@ -1,4 +1,7 @@
 export declare class Server {
+
+    constructor(cfg: { [key: string]: any } = {});
+
     /**
      * Gets information on all available projects.
      *
@@ -25,7 +28,7 @@ export declare class Server {
      * @param {Function} error Callback through which an error message is returned on error.
      */
     getMetadata(projectId: string, modelId: string, done: Function, error: Function);
-    
+
     /**
      * Gets geometry for a model within a project.
      *

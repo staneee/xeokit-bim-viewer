@@ -1,4 +1,7 @@
 export declare class Controller {
+
+    constructor(parent: any, cfg: any, server: any, viewer: any);
+
     /**
      * Fires an event on this Controller.
      *

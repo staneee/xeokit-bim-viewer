@@ -1,5 +1,8 @@
 import { Controller } from './Controller';
 export declare class BIMViewer extends Controller {
+
+    constructor(server: Server, cfg: { [key: string]: any } = {});
+
     get localeService(): any;
     _customizeViewer();
     _initCanvasContextMenus();
