@@ -1,8 +1,9 @@
 {
-  "name": "@xeokit/xeokit-bim-viewer",
-  "version": "2.4.7",
-  "description": "BIM viewer built on xeokit",
-  "main": "dist/xeokit-bim-viewer.es.js",
+  "name": "xeokit-bim-viewer",
+  "version": "2.4.71",
+  "description": "BIM viewer built on xeokit;Customized development based on BIM Viewer 2.4.7",
+  "main": "dist/xeokit-bim-viewer.umd.js",
+  "module": "dist/xeokit-bim-viewer.es.js",
   "files": [
     "/dist/xeokit-bim-viewer.es.js",
     "/dist/xeokit-bim-viewer.css",
@@ -10,7 +11,8 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": " rollup -c; cp locales/messages.js ./dist/.",
+    "build": "pwsh ./pack.ps1",
+    "rollup": " rollup -c;",
     "docs": "./node_modules/.bin/esdoc",
     "publish": "npm publish --access public"
   },
@@ -31,12 +33,12 @@
     "opensource",
     "3d-viewer"
   ],
-  "author": "Lindsay Kay",
+  "author": "staneee",
   "license": "See LICENSE.txt",
   "bugs": {
-    "url": "https://github.com/xeokit/xeokit-bim-viewer/issues"
+    "url": "https://github.com/staneee/xeokit-bim-viewer/issues"
   },
-  "homepage": "https://github.com/xeokit/xeokit-bim-viewer#readme",
+  "homepage": "https://github.com/staneee/xeokit-bim-viewer#readme",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.2.1",
     "autoprefixer": "^9.8.6",
