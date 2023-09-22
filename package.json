@@ -4,6 +4,7 @@
   "description": "BIM viewer built on xeokit;Customized development based on BIM Viewer 2.4.7",
   "main": "dist/xeokit-bim-viewer.umd.js",
   "module": "dist/xeokit-bim-viewer.es.js",
+  "types": "dist/xeokit-bim-viewer.d.ts",
   "files": [
     "/dist/xeokit-bim-viewer.es.js",
     "/dist/xeokit-bim-viewer.css",
