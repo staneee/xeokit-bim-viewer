@@ -6,9 +6,7 @@
   "module": "dist/xeokit-bim-viewer.es.js",
   "types": "dist/xeokit-bim-viewer.d.ts",
   "files": [
-    "/dist/xeokit-bim-viewer.es.js",
-    "/dist/xeokit-bim-viewer.css",
-    "/dist/messages.js"
+    "dist/**"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
