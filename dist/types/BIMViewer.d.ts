@@ -1,4 +1,5 @@
-export declare class BIMViewer {
+import { Controller } from './Controller';
+export declare class BIMViewer extends Controller {
     get localeService(): any;
     _customizeViewer();
     _initCanvasContextMenus();
