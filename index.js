@@ -1,8 +1,4 @@
-import {Server} from "./src/server/Server.js";
-import {BIMViewer} from "./src/BIMViewer.js";
-import {LocaleService} from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
-
-export {BIMViewer};
-export {Server};
-export {LocaleService};
-
+export { LocaleService } from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
+export { Server } from "./src/server/Server.js";
+export { BIMViewer } from "./src/BIMViewer.js";
+export { messages } from './src/messages.js';
