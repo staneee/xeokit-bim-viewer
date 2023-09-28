@@ -1,4 +1,4 @@
-import {utils} from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
+import { utils } from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
 
 /**
  * Default server client which loads content for a {@link BIMViewer} via HTTP from the file system.
@@ -94,6 +94,19 @@ class Server {
         const url = this._dataDir + "/projects/" + projectId + "/models/" + modelId + "/issues.json";
         utils.loadJSON(url, done, error);
     }
+
+    /**
+     * Gets obj for a model within a project.
+     *
+     * @param {String} projectId ID of the project.
+     * @param {String} modelId ID of the model.
+     * @param {Function} done Callback through which the JSON result is returned.
+     * @param {Function} error Callback through which an error message is returned on error.
+     */
+    getObjModel(projectId, modelId, done, error) {
+        const url = this._dataDir + "/projects/" + projectId + "/models/" + modelId + "/" + projectId + ".obj";
+        done(url);
+    }
 }
 
-export {Server};
+export { Server };

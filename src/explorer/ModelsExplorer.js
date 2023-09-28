@@ -1,8 +1,8 @@
-import {XKTLoaderPlugin, math} from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
-import {Controller} from "../Controller.js";
-import {ModelIFCObjectColors} from "../IFCObjectDefaults/ModelIFCObjectColors.js";
-import {ViewerIFCObjectColors} from "../IFCObjectDefaults/ViewerIFCObjectColors.js";
-import {ModelsContextMenu} from "../contextMenus/ModelsContextMenu.js";
+import { math, XKTLoaderPlugin, OBJLoaderPlugin } from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
+import { Controller } from "../Controller.js";
+import { ModelIFCObjectColors } from "../IFCObjectDefaults/ModelIFCObjectColors.js";
+import { ViewerIFCObjectColors } from "../IFCObjectDefaults/ViewerIFCObjectColors.js";
+import { ModelsContextMenu } from "../contextMenus/ModelsContextMenu.js";
 
 const tempVec3a = math.vec3();
 
@@ -40,6 +40,8 @@ class ModelsExplorer extends Controller {
         this._xktLoader = new XKTLoaderPlugin(this.viewer, {
             objectDefaults: ModelIFCObjectColors
         });
+
+        this._objLoader = new OBJLoaderPlugin(this.viewer);
 
         this._modelsContextMenu = new ModelsContextMenu({
             enableEditModels: cfg.enableEditModels
@@ -241,8 +243,8 @@ class ModelsExplorer extends Controller {
 
         if (externalMetadata) {
             this.server.getMetadata(this._projectId, modelId, (json) => {
-                    this._loadGeometry(modelId, modelInfo, json, done, error);
-                },
+                this._loadGeometry(modelId, modelInfo, json, done, error);
+            },
                 (errMsg) => {
                     this.bimViewer._busyModal.hide();
                     this.error(errMsg);
@@ -256,7 +258,12 @@ class ModelsExplorer extends Controller {
     }
 
     _loadGeometry(modelId, modelInfo, json, done, error) {
-        this.server.getGeometry(this._projectId, modelId, (arraybuffer) => {
+        if (!modelInfo.loader) {
+            modelInfo.loader = 'xkt';
+        }
+
+        if (modelInfo.loader === 'xkt') {
+            this.server.getGeometry(this._projectId, modelId, (arraybuffer) => {
                 const objectColorSource = (modelInfo.objectColorSource || this.bimViewer.getObjectColorSource());
                 const objectDefaults = (objectColorSource === "model") ? ModelIFCObjectColors : ViewerIFCObjectColors;
                 const model = this._xktLoader.load({
@@ -303,13 +310,65 @@ class ModelsExplorer extends Controller {
                     }
                 });
             },
-            (errMsg) => {
-                this.bimViewer._busyModal.hide();
-                this.error(errMsg);
-                if (error) {
-                    error(errMsg);
-                }
-            });
+                (errMsg) => {
+                    this.bimViewer._busyModal.hide();
+                    this.error(errMsg);
+                    if (error) {
+                        error(errMsg);
+                    }
+                });
+
+            return;
+        }
+
+        if (modelInfo.loader === 'obj') {
+            this.server.getObjModel(this._projectId, modelId, (objPath) => {
+                const model = this._objLoader.load({
+                    id: modelId,
+                    src: objPath,
+                    position: Array.isArray(modelInfo.position) ? modelInfo.position : [0, 0, 0],
+                    scale: Array.isArray(modelInfo.scale) ? modelInfo.scale : [1, 1, 1],
+                    rotation: Array.isArray(modelInfo.rotation) ? modelInfo.rotation : [0, 0, 0],
+                    matrix: modelInfo.matrix,
+                    edges: (modelInfo.edges !== false)
+                });
+                model.on("loaded", () => {
+                    const checkbox = document.getElementById("" + modelId);
+                    checkbox.checked = true;
+                    const scene = this.viewer.scene;
+                    this._numModelsLoaded++;
+                    this._unloadModelsButtonElement.classList.remove("disabled");
+                    if (this._numModelsLoaded < this._numModels) {
+                        this._loadModelsButtonElement.classList.remove("disabled");
+                    } else {
+                        this._loadModelsButtonElement.classList.add("disabled");
+                    }
+                    if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
+                        this._jumpToInitialCamera();
+                        this.fire("modelLoaded", modelId);
+                        this.bimViewer._busyModal.hide();
+                        if (done) {
+                            done();
+                        }
+                    } else {
+                        this.fire("modelLoaded", modelId);
+                        this.bimViewer._busyModal.hide();
+                        if (done) {
+                            done();
+                        }
+                    }
+                });
+            },
+                (errMsg) => {
+                    this.bimViewer._busyModal.hide();
+                    this.error(errMsg);
+                    if (error) {
+                        error(errMsg);
+                    }
+                });
+            return;
+        }
+
     }
 
     _jumpToInitialCamera() {
@@ -400,7 +459,8 @@ class ModelsExplorer extends Controller {
     destroy() {
         super.destroy();
         this._xktLoader.destroy();
+        this._objLoader.destroy();
     }
 }
 
-export {ModelsExplorer};
+export { ModelsExplorer };
