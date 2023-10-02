@@ -419,6 +419,53 @@ class ModelsExplorer extends Controller {
             return;
         }
 
+        if (modelInfo.loader === 'glb') {
+            this.server.getGlbModel(this._projectId, modelId, (objPath) => {
+                const model = this._gltfLoader.load({
+                    id: modelId,
+                    src: objPath,
+                    position: Array.isArray(modelInfo.position) ? modelInfo.position : [0, 0, 0],
+                    scale: Array.isArray(modelInfo.scale) ? modelInfo.scale : [1, 1, 1],
+                    rotation: Array.isArray(modelInfo.rotation) ? modelInfo.rotation : [0, 0, 0],
+                    matrix: modelInfo.matrix,
+                    edges: (modelInfo.edges !== false)
+                });
+                model.on("loaded", () => {
+                    const checkbox = document.getElementById("" + modelId);
+                    checkbox.checked = true;
+                    const scene = this.viewer.scene;
+                    this._numModelsLoaded++;
+                    this._unloadModelsButtonElement.classList.remove("disabled");
+                    if (this._numModelsLoaded < this._numModels) {
+                        this._loadModelsButtonElement.classList.remove("disabled");
+                    } else {
+                        this._loadModelsButtonElement.classList.add("disabled");
+                    }
+                    if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
+                        this._jumpToInitialCamera();
+                        this.fire("modelLoaded", modelId);
+                        this.bimViewer._busyModal.hide();
+                        if (done) {
+                            done();
+                        }
+                    } else {
+                        this.fire("modelLoaded", modelId);
+                        this.bimViewer._busyModal.hide();
+                        if (done) {
+                            done();
+                        }
+                    }
+                });
+            },
+                (errMsg) => {
+                    this.bimViewer._busyModal.hide();
+                    this.error(errMsg);
+                    if (error) {
+                        error(errMsg);
+                    }
+                });
+            return;
+        }
     }
 
     _jumpToInitialCamera() {
