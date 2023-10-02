@@ -1,6 +1,6 @@
 {
   "name": "xeokit-bim-viewer",
-  "version": "2.4.75",
+  "version": "2.4.76",
   "description": "BIM viewer built on xeokit;Customized development based on BIM Viewer 2.4.7",
   "main": "dist/xeokit-bim-viewer.umd.js",
   "module": "dist/xeokit-bim-viewer.es.js",
