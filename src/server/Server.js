@@ -107,6 +107,19 @@ class Server {
         const url = this._dataDir + "/projects/" + projectId + "/models/" + modelId + "/" + projectId + ".obj";
         done(url);
     }
+
+    /**
+     * Gets obj for a model within a project.
+     *
+     * @param {String} projectId ID of the project.
+     * @param {String} modelId ID of the model.
+     * @param {Function} done Callback through which the JSON result is returned.
+     * @param {Function} error Callback through which an error message is returned on error.
+     */
+    getGltfModel(projectId, modelId, done, error) {
+        const url = this._dataDir + "/projects/" + projectId + "/models/" + modelId + "/" + projectId + ".gltf";
+        done(url);
+    }
 }
 
 export { Server };

@@ -1,4 +1,4 @@
-import { math, XKTLoaderPlugin, OBJLoaderPlugin } from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
+import { math, XKTLoaderPlugin, OBJLoaderPlugin, GLTFLoaderPlugin } from "@xeokit/xeokit-sdk/dist/xeokit-sdk.es.js";
 import { Controller } from "../Controller.js";
 import { ModelIFCObjectColors } from "../IFCObjectDefaults/ModelIFCObjectColors.js";
 import { ViewerIFCObjectColors } from "../IFCObjectDefaults/ViewerIFCObjectColors.js";
@@ -42,6 +42,8 @@ class ModelsExplorer extends Controller {
         });
 
         this._objLoader = new OBJLoaderPlugin(this.viewer);
+
+        this._gltfLoader = new GLTFLoaderPlugin(this.viewer);
 
         this._modelsContextMenu = new ModelsContextMenu({
             enableEditModels: cfg.enableEditModels
@@ -369,6 +371,54 @@ class ModelsExplorer extends Controller {
             return;
         }
 
+        if (modelInfo.loader === 'gltf') {
+            this.server.getGltfModel(this._projectId, modelId, (objPath) => {
+                const model = this._gltfLoader.load({
+                    id: modelId,
+                    src: objPath,
+                    position: Array.isArray(modelInfo.position) ? modelInfo.position : [0, 0, 0],
+                    scale: Array.isArray(modelInfo.scale) ? modelInfo.scale : [1, 1, 1],
+                    rotation: Array.isArray(modelInfo.rotation) ? modelInfo.rotation : [0, 0, 0],
+                    matrix: modelInfo.matrix,
+                    edges: (modelInfo.edges !== false)
+                });
+                model.on("loaded", () => {
+                    const checkbox = document.getElementById("" + modelId);
+                    checkbox.checked = true;
+                    const scene = this.viewer.scene;
+                    this._numModelsLoaded++;
+                    this._unloadModelsButtonElement.classList.remove("disabled");
+                    if (this._numModelsLoaded < this._numModels) {
+                        this._loadModelsButtonElement.classList.remove("disabled");
+                    } else {
+                        this._loadModelsButtonElement.classList.add("disabled");
+                    }
+                    if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
+                        this._jumpToInitialCamera();
+                        this.fire("modelLoaded", modelId);
+                        this.bimViewer._busyModal.hide();
+                        if (done) {
+                            done();
+                        }
+                    } else {
+                        this.fire("modelLoaded", modelId);
+                        this.bimViewer._busyModal.hide();
+                        if (done) {
+                            done();
+                        }
+                    }
+                });
+            },
+                (errMsg) => {
+                    this.bimViewer._busyModal.hide();
+                    this.error(errMsg);
+                    if (error) {
+                        error(errMsg);
+                    }
+                });
+            return;
+        }
+
     }
 
     _jumpToInitialCamera() {
@@ -460,6 +510,7 @@ class ModelsExplorer extends Controller {
         super.destroy();
         this._xktLoader.destroy();
         this._objLoader.destroy();
+        this._gltfLoader.destroy();
     }
 }
 
