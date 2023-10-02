@@ -264,207 +264,13 @@ class ModelsExplorer extends Controller {
             modelInfo.loader = 'xkt';
         }
 
-        if (modelInfo.loader === 'xkt') {
-            this.server.getGeometry(this._projectId, modelId, (arraybuffer) => {
-                const objectColorSource = (modelInfo.objectColorSource || this.bimViewer.getObjectColorSource());
-                const objectDefaults = (objectColorSource === "model") ? ModelIFCObjectColors : ViewerIFCObjectColors;
-                const model = this._xktLoader.load({
-                    id: modelId,
-                    metaModelData: json,
-                    xkt: arraybuffer,
-                    objectDefaults: objectDefaults,
-                    excludeUnclassifiedObjects: true,
-                    origin: modelInfo.origin || modelInfo.position,
-                    scale: modelInfo.scale,
-                    rotation: modelInfo.rotation,
-                    matrix: modelInfo.matrix,
-                    edges: (modelInfo.edges !== false),
-                    saoEnabled: modelInfo.saoEnabled,
-                    pbrEnabled: modelInfo.pbrEnabled,
-                    backfaces: modelInfo.backfaces,
-                    globalizeObjectIds: modelInfo.globalizeObjectIds,
-                    reuseGeometries: (modelInfo.reuseGeometries !== false)
-                });
-                model.on("loaded", () => {
-                    const checkbox = document.getElementById("" + modelId);
-                    checkbox.checked = true;
-                    const scene = this.viewer.scene;
-                    this._numModelsLoaded++;
-                    this._unloadModelsButtonElement.classList.remove("disabled");
-                    if (this._numModelsLoaded < this._numModels) {
-                        this._loadModelsButtonElement.classList.remove("disabled");
-                    } else {
-                        this._loadModelsButtonElement.classList.add("disabled");
-                    }
-                    if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
-                        this._jumpToInitialCamera();
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    } else {
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    }
-                });
-            },
-                (errMsg) => {
-                    this.bimViewer._busyModal.hide();
-                    this.error(errMsg);
-                    if (error) {
-                        error(errMsg);
-                    }
-                });
-
-            return;
-        }
-
-        if (modelInfo.loader === 'obj') {
-            this.server.getObjModel(this._projectId, modelId, (objPath) => {
-                const model = this._objLoader.load({
-                    id: modelId,
-                    src: objPath,
-                    position: Array.isArray(modelInfo.position) ? modelInfo.position : [0, 0, 0],
-                    scale: Array.isArray(modelInfo.scale) ? modelInfo.scale : [1, 1, 1],
-                    rotation: Array.isArray(modelInfo.rotation) ? modelInfo.rotation : [0, 0, 0],
-                    matrix: modelInfo.matrix,
-                    edges: (modelInfo.edges !== false)
-                });
-                model.on("loaded", () => {
-                    const checkbox = document.getElementById("" + modelId);
-                    checkbox.checked = true;
-                    const scene = this.viewer.scene;
-                    this._numModelsLoaded++;
-                    this._unloadModelsButtonElement.classList.remove("disabled");
-                    if (this._numModelsLoaded < this._numModels) {
-                        this._loadModelsButtonElement.classList.remove("disabled");
-                    } else {
-                        this._loadModelsButtonElement.classList.add("disabled");
-                    }
-                    if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
-                        this._jumpToInitialCamera();
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    } else {
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    }
-                });
-            },
-                (errMsg) => {
-                    this.bimViewer._busyModal.hide();
-                    this.error(errMsg);
-                    if (error) {
-                        error(errMsg);
-                    }
-                });
-            return;
-        }
-
-        if (modelInfo.loader === 'gltf') {
-            this.server.getGltfModel(this._projectId, modelId, (objPath) => {
-                const model = this._gltfLoader.load({
-                    id: modelId,
-                    src: objPath,
-                    position: Array.isArray(modelInfo.position) ? modelInfo.position : [0, 0, 0],
-                    scale: Array.isArray(modelInfo.scale) ? modelInfo.scale : [1, 1, 1],
-                    rotation: Array.isArray(modelInfo.rotation) ? modelInfo.rotation : [0, 0, 0],
-                    matrix: modelInfo.matrix,
-                    edges: (modelInfo.edges !== false)
-                });
-                model.on("loaded", () => {
-                    const checkbox = document.getElementById("" + modelId);
-                    checkbox.checked = true;
-                    const scene = this.viewer.scene;
-                    this._numModelsLoaded++;
-                    this._unloadModelsButtonElement.classList.remove("disabled");
-                    if (this._numModelsLoaded < this._numModels) {
-                        this._loadModelsButtonElement.classList.remove("disabled");
-                    } else {
-                        this._loadModelsButtonElement.classList.add("disabled");
-                    }
-                    if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
-                        this._jumpToInitialCamera();
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    } else {
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    }
-                });
-            },
-                (errMsg) => {
-                    this.bimViewer._busyModal.hide();
-                    this.error(errMsg);
-                    if (error) {
-                        error(errMsg);
-                    }
-                });
-            return;
-        }
-
-        if (modelInfo.loader === 'glb') {
-            this.server.getGlbModel(this._projectId, modelId, (objPath) => {
-                const model = this._gltfLoader.load({
-                    id: modelId,
-                    src: objPath,
-                    position: Array.isArray(modelInfo.position) ? modelInfo.position : [0, 0, 0],
-                    scale: Array.isArray(modelInfo.scale) ? modelInfo.scale : [1, 1, 1],
-                    rotation: Array.isArray(modelInfo.rotation) ? modelInfo.rotation : [0, 0, 0],
-                    matrix: modelInfo.matrix,
-                    edges: (modelInfo.edges !== false)
-                });
-                model.on("loaded", () => {
-                    const checkbox = document.getElementById("" + modelId);
-                    checkbox.checked = true;
-                    const scene = this.viewer.scene;
-                    this._numModelsLoaded++;
-                    this._unloadModelsButtonElement.classList.remove("disabled");
-                    if (this._numModelsLoaded < this._numModels) {
-                        this._loadModelsButtonElement.classList.remove("disabled");
-                    } else {
-                        this._loadModelsButtonElement.classList.add("disabled");
-                    }
-                    if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
-                        this._jumpToInitialCamera();
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    } else {
-                        this.fire("modelLoaded", modelId);
-                        this.bimViewer._busyModal.hide();
-                        if (done) {
-                            done();
-                        }
-                    }
-                });
-            },
-                (errMsg) => {
-                    this.bimViewer._busyModal.hide();
-                    this.error(errMsg);
-                    if (error) {
-                        error(errMsg);
-                    }
-                });
-            return;
+        switch (modelInfo.loader) {
+            case 'obj':
+                this._loadObj(modelId, modelInfo, json, done, error);
+                break;
+            default:
+                this._loadXkt(modelId, modelInfo, json, done, error);
+                break;
         }
     }
 
@@ -558,6 +364,110 @@ class ModelsExplorer extends Controller {
         this._xktLoader.destroy();
         this._objLoader.destroy();
         this._gltfLoader.destroy();
+    }
+
+    _loadXkt(modelId, modelInfo, json, done, error) {
+        this.server.getGeometry(this._projectId, modelId, (arraybuffer) => {
+            const objectColorSource = (modelInfo.objectColorSource || this.bimViewer.getObjectColorSource());
+            const objectDefaults = (objectColorSource === "model") ? ModelIFCObjectColors : ViewerIFCObjectColors;
+            const model = this._xktLoader.load({
+                id: modelId,
+                metaModelData: json,
+                xkt: arraybuffer,
+                objectDefaults: objectDefaults,
+                excludeUnclassifiedObjects: true,
+                origin: modelInfo.origin || modelInfo.position,
+                scale: modelInfo.scale,
+                rotation: modelInfo.rotation,
+                matrix: modelInfo.matrix,
+                edges: (modelInfo.edges !== false),
+                saoEnabled: modelInfo.saoEnabled,
+                pbrEnabled: modelInfo.pbrEnabled,
+                backfaces: modelInfo.backfaces,
+                globalizeObjectIds: modelInfo.globalizeObjectIds,
+                reuseGeometries: (modelInfo.reuseGeometries !== false)
+            });
+            model.on("loaded", () => {
+                const checkbox = document.getElementById("" + modelId);
+                checkbox.checked = true;
+                const scene = this.viewer.scene;
+                this._numModelsLoaded++;
+                this._unloadModelsButtonElement.classList.remove("disabled");
+                if (this._numModelsLoaded < this._numModels) {
+                    this._loadModelsButtonElement.classList.remove("disabled");
+                } else {
+                    this._loadModelsButtonElement.classList.add("disabled");
+                }
+                if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
+                    this._jumpToInitialCamera();
+                    this.fire("modelLoaded", modelId);
+                    this.bimViewer._busyModal.hide();
+                    if (done) {
+                        done();
+                    }
+                } else {
+                    this.fire("modelLoaded", modelId);
+                    this.bimViewer._busyModal.hide();
+                    if (done) {
+                        done();
+                    }
+                }
+            });
+        },
+            (errMsg) => {
+                this.bimViewer._busyModal.hide();
+                this.error(errMsg);
+                if (error) {
+                    error(errMsg);
+                }
+            });
+    }
+
+    _loadObj(modelId, modelInfo, json, done, error) {
+        this.server.getObjModel(this._projectId, modelId, (objPath) => {
+            const model = this._objLoader.load({
+                id: modelId,
+                src: objPath,
+                position: Array.isArray(modelInfo.position) ? modelInfo.position : [0, 0, 0],
+                scale: Array.isArray(modelInfo.scale) ? modelInfo.scale : [1, 1, 1],
+                rotation: Array.isArray(modelInfo.rotation) ? modelInfo.rotation : [0, 0, 0],
+                matrix: modelInfo.matrix,
+                edges: (modelInfo.edges !== false)
+            });
+            model.on("loaded", () => {
+                const checkbox = document.getElementById("" + modelId);
+                checkbox.checked = true;
+                const scene = this.viewer.scene;
+                this._numModelsLoaded++;
+                this._unloadModelsButtonElement.classList.remove("disabled");
+                if (this._numModelsLoaded < this._numModels) {
+                    this._loadModelsButtonElement.classList.remove("disabled");
+                } else {
+                    this._loadModelsButtonElement.classList.add("disabled");
+                }
+                if (this._numModelsLoaded === 1) { // Jump camera to view-fit first model loaded
+                    this._jumpToInitialCamera();
+                    this.fire("modelLoaded", modelId);
+                    this.bimViewer._busyModal.hide();
+                    if (done) {
+                        done();
+                    }
+                } else {
+                    this.fire("modelLoaded", modelId);
+                    this.bimViewer._busyModal.hide();
+                    if (done) {
+                        done();
+                    }
+                }
+            });
+        },
+            (errMsg) => {
+                this.bimViewer._busyModal.hide();
+                this.error(errMsg);
+                if (error) {
+                    error(errMsg);
+                }
+            });
     }
 }
 
