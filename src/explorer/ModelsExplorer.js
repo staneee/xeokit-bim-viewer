@@ -268,6 +268,9 @@ class ModelsExplorer extends Controller {
             case 'obj':
                 this._loadObj(modelId, modelInfo, json, done, error);
                 break;
+            case 'custom':
+                this._loadCustom(modelId, modelInfo, json, done, error);
+                break;
             default:
                 this._loadXkt(modelId, modelInfo, json, done, error);
                 break;
@@ -468,6 +471,10 @@ class ModelsExplorer extends Controller {
                     error(errMsg);
                 }
             });
+    }
+
+    _loadCustom(modelId, modelInfo, json, done, error) {
+
     }
 }
 
